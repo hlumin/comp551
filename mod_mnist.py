@@ -7,7 +7,9 @@ import numpy   as np
 import scipy.misc # to visualize only  
 import os
 import torch
-from skimage import io, transform
+
+#Might be used
+#from skimage import io, transform
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
