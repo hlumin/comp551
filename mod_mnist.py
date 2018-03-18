@@ -4,7 +4,7 @@ import torchvision
 import torch.nn as nn
 from torch.autograd import Variable
 import numpy   as np 
-import scipy.misc # to visualize only  
+#import scipy.misc # to visualize only  
 import os
 import torch
 
@@ -48,7 +48,7 @@ class modified_mnist(Dataset):
             
         return sample
 
-from sklearn import preprocessing
+#from sklearn import preprocessing
 
 
 def preProcSteps(sample):
@@ -64,11 +64,12 @@ def preProcSteps(sample):
         
         image, target = sample
     
-        scaler = preprocessing.MinMaxScaler()
+        #TODO: FIX THIS LATER
+        #scaler = preprocessing.MinMaxScaler()
                 
         image = image.reshape(64,64)
         
-        image = scaler.fit_transform(image)
+        #image = scaler.fit_transform(image)
         
         #print(image)
         
