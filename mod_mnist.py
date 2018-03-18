@@ -5,7 +5,6 @@ import torch.nn as nn
 from torch.autograd import Variable
 import numpy   as np 
 import scipy.misc # to visualize only  
-import matplotlib.pyplot as plt
 import os
 import torch
 from skimage import io, transform
