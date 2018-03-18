@@ -3,13 +3,11 @@ import torch
 import torchvision
 import torch.nn as nn
 from torch.autograd import Variable
-import pandas as pd 
 import numpy   as np 
 import scipy.misc # to visualize only  
 import matplotlib.pyplot as plt
 import os
 import torch
-import pandas as pd
 from skimage import io, transform
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
