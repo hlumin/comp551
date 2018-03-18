@@ -107,6 +107,8 @@ class BackgroundFilter(object):
 url_X_train = "https://doc-08-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/3cb5fua6bsfo6fpnvphm3oklmadgo8f4/1521396000000/10970379748800439747/*/1RHRuWeoSGVc0xQQ5Agvt-XkINx37vr5a?e=download"
 url_Y_train = "https://doc-0o-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/9cut65npeuvp9evcfk0a0nq1al25hnan/1521396000000/10970379748800439747/*/1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1?e=download"
 
+import urllib
+
 with urllib.request.urlopen(url_Y_train) as testfile, open('train_y_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
     
@@ -149,7 +151,6 @@ mod_mnist_test_loader = DataLoader(mod_mnist_test, batch_size=64,
 mod_mnist_classes = np.arange(1.0,10.0,1.0) #numerical labels from 0.0 to 9.0
 
 
-from __future__ import print_function
 import argparse
 import torch
 import torch.nn as nn
