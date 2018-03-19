@@ -7,6 +7,7 @@ import numpy   as np
 #import scipy.misc # to visualize only  
 import os
 import torch
+import sklearn
 
 #Might be used
 #from skimage import io, transform
@@ -65,11 +66,11 @@ def preProcSteps(sample):
         image, target = sample
     
         #TODO: FIX THIS LATER
-        #scaler = preprocessing.MinMaxScaler()
+        scaler = preprocessing.MinMaxScaler()
                 
         image = image.reshape(64,64)
         
-        #image = scaler.fit_transform(image)
+        image = scaler.fit_transform(image)
         
         #print(image)
         
@@ -110,19 +111,19 @@ class BackgroundFilter(object):
         
     
 
-url_X_DEVSET = "https://drive.google.com/uc?export=download&id=1kvxmWPdYMO7AhdP68KDtdxCTP35y7iRn"
-url_Y_DEVSET = "https://drive.google.com/uc?export=download&id=1Ou9Os9eBxUxTGopj365EbDueLLCyvwLY"
-#url_X_train = "https://doc-08-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/3cb5fua6bsfo6fpnvphm3oklmadgo8f4/1521396000000/10970379748800439747/*/1RHRuWeoSGVc0xQQ5Agvt-XkINx37vr5a?e=download"
-#url_Y_train = "https://doc-0o-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/9cut65npeuvp9evcfk0a0nq1al25hnan/1521396000000/10970379748800439747/*/1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1?e=download"
-
+#url_X_DEVSET = "https://drive.google.com/uc?export=download&id=1kvxmWPdYMO7AhdP68KDtdxCTP35y7iRn"
+#url_Y_DEVSET = "https://drive.google.com/uc?export=download&id=1Ou9Os9eBxUxTGopj365EbDueLLCyvwLY"
+url_Y_train = "https://drive.google.com/uc?export=download&id=1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1"
+url_X_train = "https://drive.google.com/uc?export=download&id=1RHRuWeoSGVc0xQQ5Agvt-XkINx37vr5a"
+#url_X_test = "https://drive.google.com/uc?export=download&id=1PM41k6uZHtGj6nu0amPw0WC7Ol8jTFWy"
 import urllib.request as urllib2
 
 print(' -- Downloading files --')
 
-with urllib2.urlopen(url_Y_DEVSET) as testfile, open('train_y_remote.csv', 'w') as f:
+with urllib2.urlopen(url_Y_train) as testfile, open('train_y_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
     
-with urllib2.urlopen(url_X_DEVSET) as testfile, open('train_x_remote.csv', 'w') as f:
+with urllib2.urlopen(url_X_train) as testfile, open('train_x_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
 
 
@@ -133,11 +134,15 @@ Y_train = np.loadtxt('train_y_remote.csv', delimiter = ',')
 #X_train = np.loadtxt('dev_mini_sample_test_X.csv', delimiter = ',')
 #Y_train = np.loadtxt('dev_mini_sample_test_Y.csv', delimiter = ',')
 
+
+print('X_train - shape: {} - type: {} '.format(X_train.shape, type(X_train)))
+print('Y_train - shape: {} - type: {} '.format(Y_train.shape, type(Y_train)))
+
 kwargs = {'num_workers': 1, 'pin_memory': True}
 
 
-mod_mnist_train = modified_mnist(X_in = X_train[:800],
-                                Y_in = Y_train[:800],
+mod_mnist_train = modified_mnist(X_in = X_train[:40000],
+                                Y_in = Y_train[:40000],
                                            transform=transforms.Compose([
                                                BackgroundFilter(),
                                                ToTensor(),
@@ -148,8 +153,8 @@ mod_mnist_train = modified_mnist(X_in = X_train[:800],
 mod_mnist_train_loader = DataLoader(mod_mnist_train, batch_size= 64,
                         shuffle=True, num_workers=1, pin_memory=1)
 
-mod_mnist_test = modified_mnist(X_in=X_train[200:],
-                                    Y_in=Y_train[200:],
+mod_mnist_test = modified_mnist(X_in=X_train[40000:8000],
+                                    Y_in=Y_train[40000:8000],
                                            transform=transforms.Compose([
                                                BackgroundFilter(),
                                                ToTensor(),
@@ -195,7 +200,9 @@ class CONVnet(nn.Module):
 model = CONVnet().double()
 
 print('CUDA!!')
-model.cuda()
+#model.cuda()
+print('CUDA!!')
+
 
 '''
     MOST RECENT - Training loop:
@@ -223,7 +230,8 @@ def train(train_loader, model, optimizer,args, epoch ):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
        #if args.cuda:
-        data, target = data.cuda(), target.cuda()
+        #data, target = data.cuda(), target.cuda()
+        #data, target = data, target
 
         data, target = Variable(data), Variable(target)
         optimizer.zero_grad()
@@ -250,8 +258,10 @@ def testing_loop(test_loader, model):
     
     for data, target in test_loader:
 
-    	#CUDA!!
-        data, target = data.cuda(), target.cuda()
+        #CUDA!!
+        #data, target = data.cuda(), target.cuda()
+        #data, target = data, target.cuda()
+
         data, target = Variable(data, volatile=True), Variable(target)
         output = model(data)
         
@@ -288,7 +298,7 @@ accuracy_test_list = []
 
 print('Training Loop next')
 
-for epoch in range(1, 300):
+for epoch in range(1, 10000):
     print('Epoch {}'.format(epoch))
     
     train_loss = train(mod_mnist_train_loader, model, optimizer,train_arguments, epoch)

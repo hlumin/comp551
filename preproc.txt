@@ -1,0 +1,38 @@
+def preProcSteps(sample, threshold):
+    
+    
+        '''In:
+            TUPLE of shape (IMAGE,LABEL), threshold for deonoising
+            
+            image - ndarray, 1x4096
+            target: ndarray, 1
+        Out: pytorch
+        
+            output: dropped all pixels
+            image: NP array [1x64x64]
+            target: Np array [1]
+        '''
+        
+        image, target = sample
+    
+        #Making sure the shape is (Nx4096)     
+        image = image.reshape(-1, 4096)
+        
+        
+        #Scaling to 0_1
+        scaler = sklearn.preprocessing.MinMaxScaler()        
+        image = scaler.fit_transform(image)
+        
+        
+        def denoising(x):
+            if (x < float(threshold)):
+                x = 0.0
+            return x
+    
+    
+        vectFilter = np.vectorize(denoising)
+        
+        #Denoising the image
+        processed_image = vectFilter(image)      
+        
+        return (processed_image, target)
