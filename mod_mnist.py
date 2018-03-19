@@ -194,7 +194,7 @@ class CONVnet(nn.Module):
 
 model = CONVnet().double()
 
-#CUDA!!
+print('CUDA!!')
 model.cuda()
 
 '''
