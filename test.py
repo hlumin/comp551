@@ -1,11 +1,13 @@
 import numpy as np
 
-a = np.ones(2)
+url_Y_train = "https://doc-0o-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/9cut65npeuvp9evcfk0a0nq1al25hnan/1521396000000/10970379748800439747/*/1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1?e=download"
 
-np.savetxt('a.csv',a)
+import urllib.request as urllib2
+print(' -- Downloading files --')
 
-print('Hello hi')
+with urllib2.urlopen(url_Y_train) as testfile, open('train_yBOOM_remote.csv', 'w') as f:
+    f.write(testfile.read().decode())
 
-b = np.loadtxt('a.csv')
+y = np.loadtxt('train_yBOOM_remote.csv')
 
-print(b)
+print(y.shape)

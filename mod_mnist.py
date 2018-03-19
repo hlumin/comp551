@@ -115,14 +115,14 @@ class BackgroundFilter(object):
 url_X_train = "https://doc-08-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/3cb5fua6bsfo6fpnvphm3oklmadgo8f4/1521396000000/10970379748800439747/*/1RHRuWeoSGVc0xQQ5Agvt-XkINx37vr5a?e=download"
 url_Y_train = "https://doc-0o-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/9cut65npeuvp9evcfk0a0nq1al25hnan/1521396000000/10970379748800439747/*/1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1?e=download"
 
-import urllib
+import urllib.request as urllib2
 
 print(' -- Downloading files --')
 
-with urllib.request.urlopen(url_Y_train) as testfile, open('train_y_remote.csv', 'w') as f:
+with urllib2.urlopen(url_Y_train) as testfile, open('train_y_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
     
-with urllib.request.urlopen(url_X_train) as testfile, open('train_x_remote.csv', 'w') as f:
+with urllib2.urlopen(url_X_train) as testfile, open('train_x_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
 
 
@@ -240,6 +240,7 @@ def train(train_loader, model, optimizer,args, epoch ):
 
 
 #THIS ONE WORKS
+print('Def testing loop')
 def testing_loop(test_loader, model):  
     
     
@@ -285,6 +286,7 @@ losses_train_list = []
 losses_test_list = []
 accuracy_test_list = []
 
+print('Training Loop next')
 
 for epoch in range(1, 300):
     print('Epoch {}'.format(epoch))
