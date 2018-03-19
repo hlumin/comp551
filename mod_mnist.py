@@ -89,25 +89,35 @@ class ToTensor(object):
            return preProcSteps(sample)
 
 class BackgroundFilter(object):
-    
-    def filter (x):
-        if (x < 250.0):
-            x = 0.0
-        return x
-    
+  
     def __call__(self, sample):
         
         image, target = sample
-        vectFilter = np.vectorize(filter)
-        processed_image = vectFilter(image).astype(float)
+        
+        def denoising(x):
+            if (x < 250.0):
+                x = 0.0
+            return x
+    
+    
+        vectFilter = np.vectorize(denoising)
+        processed_image = vectFilter(image)
         
         return (processed_image, target)
     
 
+
+        
+    
+
+#url_X_DEVSET = "https://doc-0c-7k-docs.googleusercontent.com/docs/securesc/9u8na38ip6eo68rofvv00docfecgcore/gujmq503334s560ld445ps1fprllcju4/1521417600000/02807548021885979543/02807548021885979543/1kvxmWPdYMO7AhdP68KDtdxCTP35y7iRn?e=download"
+#url_Y_DEVSET = "https://doc-08-c8-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/ndf0uq59d20kikgkhen76qm342o6cc0k/1521403200000/02807548021885979543/*/1Ou9Os9eBxUxTGopj365EbDueLLCyvwLY?e=download"
 url_X_train = "https://doc-08-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/3cb5fua6bsfo6fpnvphm3oklmadgo8f4/1521396000000/10970379748800439747/*/1RHRuWeoSGVc0xQQ5Agvt-XkINx37vr5a?e=download"
 url_Y_train = "https://doc-0o-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/9cut65npeuvp9evcfk0a0nq1al25hnan/1521396000000/10970379748800439747/*/1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1?e=download"
 
 import urllib
+
+print(' -- Downloading files --')
 
 with urllib.request.urlopen(url_Y_train) as testfile, open('train_y_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
@@ -116,7 +126,7 @@ with urllib.request.urlopen(url_X_train) as testfile, open('train_x_remote.csv',
     f.write(testfile.read().decode())
 
 
-
+print(" -- Loading files --")
 
 X_train = np.loadtxt('train_x_remote.csv', delimiter = ',')
 Y_train = np.loadtxt('train_y_remote.csv', delimiter = ',')
@@ -129,7 +139,7 @@ kwargs = {'num_workers': 1, 'pin_memory': True}
 mod_mnist_train = modified_mnist(X_in = X_train[:40000],
                                 Y_in = Y_train[:40000],
                                            transform=transforms.Compose([
-                                               #BackgroundFilter(),
+                                               BackgroundFilter(),
                                                ToTensor(),
                                            ]))
 
@@ -141,7 +151,7 @@ mod_mnist_train_loader = DataLoader(mod_mnist_train, batch_size= 64,
 mod_mnist_test = modified_mnist(X_in=X_train[40000:48000],
                                     Y_in=Y_train[40000:48000],
                                            transform=transforms.Compose([
-                                               #BackgroundFilter(),
+                                               BackgroundFilter(),
                                                ToTensor(),
                                            ]))
 
@@ -290,7 +300,9 @@ for epoch in range(1, 300):
     accuracy_test_list.append(test_accuracy)
     
     #Taking a snapshot
-    #torch.save(model, "cnn/saves/cnn_17_Filtered_Epoch{}".format(epoch))
+    if (epoch % 50 == 0):
+        torch.save(model, "CNN_3_E_{}.pt".format(epoch))
+
     #np.savetxt('cnn/results/17/accuracy_test_list.csv', accuracy_test_list, delimiter = ',')
     #np.savetxt('cnn/results/17/losses_test_list.csv', losses_test_list, delimiter = ',')
     #np.savetxt('cnn/results/17/losses_train_list.csv', losses_train_list, delimiter = ',')
