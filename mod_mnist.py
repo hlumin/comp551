@@ -110,19 +110,19 @@ class BackgroundFilter(object):
         
     
 
-#url_X_DEVSET = "https://doc-0c-7k-docs.googleusercontent.com/docs/securesc/9u8na38ip6eo68rofvv00docfecgcore/gujmq503334s560ld445ps1fprllcju4/1521417600000/02807548021885979543/02807548021885979543/1kvxmWPdYMO7AhdP68KDtdxCTP35y7iRn?e=download"
-#url_Y_DEVSET = "https://doc-08-c8-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/ndf0uq59d20kikgkhen76qm342o6cc0k/1521403200000/02807548021885979543/*/1Ou9Os9eBxUxTGopj365EbDueLLCyvwLY?e=download"
-url_X_train = "https://doc-08-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/3cb5fua6bsfo6fpnvphm3oklmadgo8f4/1521396000000/10970379748800439747/*/1RHRuWeoSGVc0xQQ5Agvt-XkINx37vr5a?e=download"
-url_Y_train = "https://doc-0o-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/9cut65npeuvp9evcfk0a0nq1al25hnan/1521396000000/10970379748800439747/*/1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1?e=download"
+url_X_DEVSET = "https://drive.google.com/uc?export=download&id=1kvxmWPdYMO7AhdP68KDtdxCTP35y7iRn"
+url_Y_DEVSET = "https://drive.google.com/uc?export=download&id=1Ou9Os9eBxUxTGopj365EbDueLLCyvwLY"
+#url_X_train = "https://doc-08-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/3cb5fua6bsfo6fpnvphm3oklmadgo8f4/1521396000000/10970379748800439747/*/1RHRuWeoSGVc0xQQ5Agvt-XkINx37vr5a?e=download"
+#url_Y_train = "https://doc-0o-84-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/9cut65npeuvp9evcfk0a0nq1al25hnan/1521396000000/10970379748800439747/*/1PuENkRYGxw3bJ-m0HQOLT24tFqOPyCf1?e=download"
 
 import urllib.request as urllib2
 
 print(' -- Downloading files --')
 
-with urllib2.urlopen(url_Y_train) as testfile, open('train_y_remote.csv', 'w') as f:
+with urllib2.urlopen(url_Y_DEVSET) as testfile, open('train_y_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
     
-with urllib2.urlopen(url_X_train) as testfile, open('train_x_remote.csv', 'w') as f:
+with urllib2.urlopen(url_X_DEVSET) as testfile, open('train_x_remote.csv', 'w') as f:
     f.write(testfile.read().decode())
 
 
@@ -136,8 +136,8 @@ Y_train = np.loadtxt('train_y_remote.csv', delimiter = ',')
 kwargs = {'num_workers': 1, 'pin_memory': True}
 
 
-mod_mnist_train = modified_mnist(X_in = X_train[:40000],
-                                Y_in = Y_train[:40000],
+mod_mnist_train = modified_mnist(X_in = X_train[:800],
+                                Y_in = Y_train[:800],
                                            transform=transforms.Compose([
                                                BackgroundFilter(),
                                                ToTensor(),
@@ -148,8 +148,8 @@ mod_mnist_train = modified_mnist(X_in = X_train[:40000],
 mod_mnist_train_loader = DataLoader(mod_mnist_train, batch_size= 64,
                         shuffle=True, num_workers=1, pin_memory=1)
 
-mod_mnist_test = modified_mnist(X_in=X_train[40000:48000],
-                                    Y_in=Y_train[40000:48000],
+mod_mnist_test = modified_mnist(X_in=X_train[200:],
+                                    Y_in=Y_train[200:],
                                            transform=transforms.Compose([
                                                BackgroundFilter(),
                                                ToTensor(),
